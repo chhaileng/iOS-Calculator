@@ -18,10 +18,17 @@ class ViewController: UIViewController {
     var numberOnSecondScreen: String?
     var previousSign: String = "+"
     var newCalcuator: Bool? = true
+    var previousButton: String = ""
     
     var result: Double = 0
     
+    // +-×÷
     @IBAction func numberTap(_ sender: UIButton) {
+
+        if previousButton == "+" || previousButton == "-" || previousButton == "×" || previousButton == "÷" || previousButton == "%" {
+            newCalcuator = false
+        }
+        
         if newCalcuator! {
             self.clearScreen()
         }
@@ -42,9 +49,17 @@ class ViewController: UIViewController {
             numberOnScreen = ""
         }
         resultLabel.text = numberOnScreen! + sender.currentTitle!
+        
+        previousButton = sender.currentTitle!
     }
     
     @IBAction func operatorTap(_ sender: UIButton) {
+        if sender.currentTitle! == "=" {
+            if operationLabel.text! == "" || previousButton == "="{
+                return
+            }
+        }
+        
         numberOnSecondScreen = operationLabel.text!
         
         if sender.currentTitle != "=" {
@@ -74,6 +89,8 @@ class ViewController: UIViewController {
             result *= Double(resultLabel.text!)!
         case "÷":
             result /= Double(resultLabel.text!)!
+        case "%":
+            result = result.truncatingRemainder(dividingBy: Double(resultLabel.text!)!)
         default:
             print("err")
         }
@@ -82,7 +99,12 @@ class ViewController: UIViewController {
         
         if sender.currentTitle! == "=" {
             operationLabel.text = "\(operationLabel.text!) "
-            resultLabel.text = formatNumber(result)
+            
+            if formatNumber(result) == "inf" || formatNumber(result) == "nan" {
+                resultLabel.text = "Error"
+            } else {
+                resultLabel.text = formatNumber(result)
+            }
             self.resetCalculator()
         } else {
             operationLabel.text = "\(formatNumber(result)) \(sender.currentTitle!) "
@@ -90,6 +112,11 @@ class ViewController: UIViewController {
 
             resultLabel.text = "0"
         }
+        
+        
+        previousButton = sender.currentTitle!
+        
+        
     }
     
     
@@ -101,6 +128,8 @@ class ViewController: UIViewController {
             tempNum = -tempNum
             resultLabel.text = self.formatNumber(tempNum)
         }
+        
+        previousButton = sender.currentTitle!
     }
     
     func clearScreen() -> Void {
@@ -108,11 +137,13 @@ class ViewController: UIViewController {
         resultLabel.text = "0"
         result = 0
         previousSign = "+"
+        newCalcuator = true
     }
     
     func resetCalculator() -> Void {
         previousSign = "+"
         newCalcuator = true
+        result = 0
     }
     
     func formatNumber(_ number: Double) -> String{
