@@ -54,6 +54,15 @@ class ViewController: UIViewController {
     }
     
     @IBAction func operatorTap(_ sender: UIButton) {
+        
+        if (previousButton == "+" || previousButton == "-" || previousButton == "×" || previousButton == "÷" || previousButton == "%") && sender.currentTitle != "=" {
+            let tmpNumberOnSecondScreen = numberOnSecondScreen!.split(separator: " ")
+            operationLabel.text = "\(tmpNumberOnSecondScreen[0]) \(sender.currentTitle!) "
+            previousButton = sender.currentTitle!
+            previousSign = previousButton
+            return
+        }
+        
         if sender.currentTitle! == "=" {
             if operationLabel.text! == "" || previousButton == "="{
                 return
